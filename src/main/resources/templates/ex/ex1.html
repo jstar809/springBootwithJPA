@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h4 th:text="${list}"></h4>
+	<hr/>
+	<h4>[[${list}]]</h4>
+	<hr/>
+	<h4 th:text="${list}">[[${list}]]</h4>
+	
+	<div th:with="test1 =10 , test2=20">
+		<h4 th:text="${test1 + test2}"></h4>
+	</div>
+	
+	<ul>
+		<li th:each="str1 : ${list}" th:text="${str1}"></li>
+	</ul>
+	
+	<ul>
+		<th:block th:each="str:${list}">
+			<li>[[${str}]]</li>
+		</th:block> 
+	</ul>
+	
+	<ul>
+		<li th:each="str1 , status:${list}" >
+			<span th:if="${status.index % 2 == 1}" th:text="${str1}"></span>
+		</li>
+	</ul>
+	
+	<h1>test</h1>
+	<ul>
+		<th:block th:each="str,status:${list}">
+			<th:block th:switch="${status.index}">
+				<th:block th:case="1">
+					<li> <span> [[${str}]]</span> </li>
+				</th:block>
+			</th:block>
+		</th:block>
+	</ul>
+	
+	<h1>url</h1>
+	<a th:href="@{/hello(name='한글 공격' ,val=2 , val2='te st') }">test</a>
+	<a th:href="@{/hello(name='${tt}' ,val=2 , val2='te st') }">test2</a>
+	
+</body>
+</html>
