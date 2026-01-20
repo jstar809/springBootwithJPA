@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/basic.html}">
+<head>
+<meta charset="UTF-8">
+<title>Board Modify</title>
+</head>
+
+<div layout:fragment="content">
+	<div class="row mt-3">
+		<div class='col'>
+			<div class="card">
+				<div class="card-header">
+					Board Modify
+				</div>
+				<div class="card-body">
+					<form th:action="@{/board/modify(bno=${dto.bno})}" id ='fr1'>
+						<div class="input-group mb-3">
+							<span class="input-group-text">Bno</span>
+							<input type="text" class="form-control" th:value="${dto.bno}" th:name="bno" readonly="readonly">
+						</div>
+						<div class="input-group mb-3">
+							<span class="input-group-text">title</span>
+							<input type="text" class="form-control" th:value="${dto.title}" name="title" >
+						</div>
+						<div class="input-group mb-3">
+							<span class="input-group-text">content</span>
+							<textarea  class="form-control col-sm-5" rows="5"  name="content">[[${dto.content}]]</textarea>
+						</div>
+						<div class="input-group mb-3">
+							<span class="input-group-text">Writer</span>
+							<input type="text" class="form-control" th:value="${dto.writer}" name="writer" readonly="readonly">
+						</div>
+						<div class="input-group mb-3">
+							<span class="input-group-text">regDate</span>
+							<input type="text" class="form-control" th:value="${#temporals.format( dto.regDate , 'yyyy-MM-dd HH:mm:ss' )}" readonly="readonly">
+						</div>
+						<div class="input-group mb-3">
+							<span class="input-group-text">modDate</span>
+							<input type="text" class="form-control" th:value="${#temporals.format( dto.modDate , 'yyyy-MM-dd HH:mm:ss' )}" readonly="readonly">
+						</div>
+					</form>					
+					
+					<div class="my-4">
+						<div class="float-end" th:with="link=${pageRequsetDTO.link}">
+							<button type="button" class="btn btn-primary" id="listBtn"> List</button>
+							<button type="button" class="btn btn-secondary" id="modBtn"> modify</button>
+							<button type="button" class="btn btn-danger" id="delBtn"> delete</button>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script layout:fragment="script" th:inline="javascript">
+	const errors = [[${errors}]];
+	
+	let errorMsg="";
+	
+	if(errors){
+		for(let error of errors ){
+			errorMsg += error.field + " 에서 " +error.code +"\n"
+		}
+		history.replaceState({}, null, null);
+		alert(errorMsg);
+	}
+	
+	const link = [[${pageRequsetDTO.link}]];
+	const formObj = document.querySelector('#fr1');
+	
+	document.querySelector('#modBtn').addEventListener("click" , (e)=>{
+		e.preventDefault();
+		e.stopPropagation();
+		
+		formObj.action = `/board/modify?${link}`;
+		formObj.method = "post";
+		formObj.submit();
+	});
+	
+	
+	document.querySelector('#delBtn').addEventListener("click" , (e)=>{
+		e.preventDefault();
+		e.stopPropagation();
+		
+		formObj.action = `/board/remove`;
+		formObj.method = "post";
+		formObj.submit();
+	});
+	
+	document.querySelector('#listBtn').addEventListener("click" , (e)=>{
+		e.preventDefault();
+		e.stopPropagation();
+		
+		formObj.reset();
+		location.href=`/board/list?${link}`
+	});
+	
+</script>
+
+</html>
