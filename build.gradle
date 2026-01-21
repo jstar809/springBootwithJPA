@@ -46,14 +46,16 @@ dependencies {
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
 
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}" 
 
-    annotationProcessor(
+    /*annotationProcessor(
 
             "javax.persistence:javax.persistence-api",
 
             "javax.annotation:javax.annotation-api",
 
-            "com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
+            "com.querydsl:querydsl-apt:${queryDslVersion}:jpa"
+     )*/
 
 
     implementation 'org.modelmapper:modelmapper:3.1.0'
@@ -72,10 +74,28 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// QueryDSL 설정
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
 sourceSets {
-    main {
-        java {
-            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
-        }
-    }
+    main.java.srcDir querydslDir
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+compileJava.dependsOn compileQuerydsl
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
