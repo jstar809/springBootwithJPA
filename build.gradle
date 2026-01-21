@@ -1,12 +1,8 @@
-
 buildscript {
     ext {
         queryDslVersion = "5.0.0"
     }
 }
-
-
-
 
 plugins {
     id 'org.springframework.boot' version '2.7.3'
@@ -46,28 +42,13 @@ dependencies {
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
 
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-    implementation "com.querydsl:querydsl-apt:${queryDslVersion}" 
-
-    /*annotationProcessor(
-
-            "javax.persistence:javax.persistence-api",
-
-            "javax.annotation:javax.annotation-api",
-
-            "com.querydsl:querydsl-apt:${queryDslVersion}:jpa"
-     )*/
-
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
     implementation 'org.modelmapper:modelmapper:3.1.0'
-
-    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
-
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    
+
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
-    
-
 }
 
 tasks.named('test') {
@@ -83,7 +64,11 @@ querydsl {
 }
 
 sourceSets {
-    main.java.srcDir querydslDir
+    main {
+        java {
+            srcDirs = ["$projectDir/src/main/java", querydslDir]
+        }
+    }
 }
 
 configurations {
@@ -92,10 +77,4 @@ configurations {
 
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
-}
-
-compileJava.dependsOn compileQuerydsl
-
-tasks.withType(JavaCompile) {
-    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
