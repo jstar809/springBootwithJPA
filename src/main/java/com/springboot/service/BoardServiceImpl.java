@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.springboot.domain.Board;
 import com.springboot.dto.BoardDTO;
+import com.springboot.dto.BoardListReplyCountDTO;
 import com.springboot.dto.PageRequsetDTO;
 import com.springboot.dto.PageResponseDTO;
 import com.springboot.repository.BoardRepository;
@@ -95,6 +96,27 @@ public class BoardServiceImpl implements BoardService {
 				.build();
 		
 		return boardDTO;
+	}
+
+	@Override
+	public PageResponseDTO<BoardListReplyCountDTO> listWithReplyCount(PageRequsetDTO pageRequsetDTO) {
+		String[] type = pageRequsetDTO.getTypes();
+		String keyword = pageRequsetDTO.getKeyword();
+		Pageable pageable = pageRequsetDTO.getPageable("bno");
+				
+		
+		
+		Page<BoardListReplyCountDTO> result = boardRepository.searchWithReplyCount(type, keyword, pageable);
+		List<BoardListReplyCountDTO> boardDTO = result.getContent();
+        int total = (int)result.getTotalElements();
+		
+        PageResponseDTO pageResponseDTO = PageResponseDTO.<BoardListReplyCountDTO>withAll()
+			.dtoList(boardDTO)
+			.pageRequsetDTO(pageRequsetDTO)
+			.total(total)
+			.build();
+		
+		return pageResponseDTO;
 	}
 
 }

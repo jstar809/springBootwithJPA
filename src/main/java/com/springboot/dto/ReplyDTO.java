@@ -2,37 +2,41 @@ package com.springboot.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDTO {
+public class ReplyDTO {
 	
-	private long bno;
+	private long rno;
 	
 	@NotNull
-	@Size(min = 3 , max = 100)
-	private String title;
+	private long bno;
+	
+	
+	@NotNull
+	@Size(max = 100)
+	private String replyText;
 	
 	@NotEmpty
-	private String content;
-	
-	@NotEmpty
-	private String writer;
-	
+	private String replyer;
 	
 	private LocalDateTime regDate;
+	
 	private LocalDateTime modDate;
+	
+	
+	
+	
 	
 	
 }

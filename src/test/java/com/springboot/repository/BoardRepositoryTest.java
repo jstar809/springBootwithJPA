@@ -87,16 +87,27 @@ public class BoardRepositoryTest {
 	 */
 	
 	
+	/*
+	 * @Test public void queryDslSelect1() {
+	 * boardRepository.search1(PageRequest.of(0, 10, Sort.by("bno").descending()));
+	 * 
+	 * 
+	 * }
+	 * 
+	 * @Test public void queryDslSelect2() { boardRepository.searchAll( new
+	 * String[]{"t" ,"c"} , "d" ,PageRequest.of(0, 10,
+	 * Sort.by("bno").descending()));
+	 * 
+	 * 
+	 * }
+	 */
+	
 	@Test
-	public void queryDslSelect1() {
-		boardRepository.search1(PageRequest.of(0, 10, Sort.by("bno").descending()));
+	public void queryDslSelect3() {
 		
 		
-	}
-	@Test
-	public void queryDslSelect2() {
-		boardRepository.searchAll( new String[]{"t" ,"c"} , "d"  ,PageRequest.of(0, 10, Sort.by("bno").descending()));
 		
+		boardRepository.searchWithReplyCount( new String[] {"t" , "c"}, "title" , PageRequest.of(0, 10,Sort.by("bno").descending()));
 		
 	}
 	

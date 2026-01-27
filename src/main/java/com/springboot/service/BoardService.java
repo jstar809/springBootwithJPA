@@ -1,6 +1,7 @@
 package com.springboot.service;
 
 import com.springboot.dto.BoardDTO;
+import com.springboot.dto.BoardListReplyCountDTO;
 import com.springboot.dto.PageRequsetDTO;
 import com.springboot.dto.PageResponseDTO;
 
@@ -15,4 +16,6 @@ public interface BoardService {
 	void remove(Long bno);
 	
 	PageResponseDTO<BoardDTO> list(PageRequsetDTO pageRequsetDTO);
+	
+	PageResponseDTO<BoardListReplyCountDTO> listWithReplyCount(PageRequsetDTO pageRequsetDTO);
 }

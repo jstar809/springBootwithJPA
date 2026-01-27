@@ -43,9 +43,9 @@ public class BoardController {
 		
 		log.info(pageRequsetDTO);
 		
-		model.addAttribute("responseDTO" ,boardService.list(pageRequsetDTO));
+		model.addAttribute("responseDTO" ,boardService.listWithReplyCount(pageRequsetDTO));
 		
-		log.info(boardService.list(pageRequsetDTO));
+		log.info(boardService.listWithReplyCount(pageRequsetDTO));
 		
 		return "/board/list";
 		
