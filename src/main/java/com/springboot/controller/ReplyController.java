@@ -46,7 +46,7 @@ public class ReplyController {
 	
 	
 	@ApiOperation(value = "reply Post" , notes = "POSt 방식으로 댓글 등록"  )
-	@PostMapping(value = "/" ,consumes = MediaType.APPLICATION_JSON_VALUE )
+	@PostMapping(value = "" ,consumes = MediaType.APPLICATION_JSON_VALUE )
 	public ResponseEntity<Map<String , Object>> register(@RequestBody @Valid ReplyDTO replyDTO , BindingResult bindingResult ) throws BindException{
 		log.info(replyDTO);
 		
@@ -90,7 +90,7 @@ public class ReplyController {
 	
 	@ApiOperation(value = "update reply" , notes = "put 방식으로 특정 게시글의 댓글 수정"  )
 	@PutMapping(value =  "/{rno}" , consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String ,Long> modifyReply(@PathVariable String id, @RequestBody ReplyDTO replyDTO) {
+	public Map<String ,Long> modifyReply(@PathVariable String rno, @RequestBody ReplyDTO replyDTO) {
 		
 		replyService.modify(replyDTO);
 		
