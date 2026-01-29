@@ -56,9 +56,288 @@
 				</div>
 			</div>
 		</div>
+		
+		<div class="row mt-3">
+			<div class="col-md-12">
+				<div class="my-4">
+					<button class="btn btn-info addReplyBtn">ADD REPLY</button>
+				</div>
+				<ul class="list-group replyList"></ul>
+			</div>
+		</div>
+		
+		<div class="row mt-3">
+			<div class="col">
+		    	<ul class="pagination replyPaging"></ul>
+			</div>
+		</div>
+		
+		<div class="modal registerModal" tabindex="-1">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			    	<div class="modal-header">
+					    <h5 class="modal-title">Register Reply</h5>
+			        	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			      	</div>
+			      	<div class="modal-body">
+				        <div class="input-group mb-3">
+				          	<span class="input-group-text">Reply Text</span>
+				          	<input type="text" class="form-control replyText" />
+				        </div>
+				        <div class="input-group mb-3">
+				          	<span class="input-group-text">Replyer</span>
+				          	<input type="text" class="form-control replyer" />
+				        </div>
+			      </div>
+			      <div class="modal-footer">
+			        	<button type="button" class="btn btn-primary registerBtn">Register</button>
+			        	<button type="button" class="btn btn-outline-dark closeRegisterBtn">Close</button>
+			      </div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal modifyModal" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title replyHeader">Modify Reply</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		        <label for="modifyText">Reply Text</label>
+		        <input type="text" class="form-control modifyText" id="modifyText">
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-info modifyBtn">Modify</button>
+		        <button type="button" class="btn btn-danger removeBtn">Remove</button>
+		        <button type="button" class="btn btn-outline-dark closeModifyBtn" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		
 	</div>
 	
+	<th:block layout:fragment="importScript">
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script th:src="@{/js/reply.js}"></script>		
+	</th:block>
+	
 	<script layout:fragment="script" th:inline="javascript">
+	
+		//댓글 페이지/ 사이즈
+		let page = 1;
+		let size = 10;
+		
+		const bno = [[${dto.bno}]];
+		
+		// 
+		const replyList = document.querySelector(".replyList");
+		const replyPaging = document.querySelector(".replyPaging");
+		
+		//댓글 등록 모달
+		const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"))
+
+		//registerModal
+		const registerBtn = document.querySelector(".registerBtn")
+		const replyText = document.querySelector(".replyText")
+		const replyer = document.querySelector(".replyer")
+		const closeRegisterBtn = document.querySelector(".closeRegisterBtn")
+		
+		document.querySelector(".addReplyBtn").addEventListener("click", function (e){
+		    registerModal.show()
+		}, false)
+	
+		closeRegisterBtn.addEventListener("click", function (e){
+		    registerModal.hide()
+		}, false)
+		
+		
+		
+		//modifyModal
+		const modifyModal = new bootstrap.Modal(document.querySelector(".modifyModal"))
+		
+		const replyHeader = document.querySelector(".replyHeader")
+		const modifyText = document.querySelector(".modifyText")
+		const modifyBtn = document.querySelector(".modifyBtn")
+		const removeBtn = document.querySelector(".removeBtn")
+		const closeModifyBtn = document.querySelector(".closeModifyBtn")
+	
+		
+		//댓글 수정창 모달 쇼
+		replyList.addEventListener("click" ,(e)=>{
+			e.preventDefault();
+			e.stopPropagation();
+			
+			const target = e.target;
+			
+			if(!target || e.target.tagName !== 'SPAN' ){
+				return;
+			}
+			
+			const rno = target.getAttribute('data-rno');
+			
+			if(!rno) {
+				return;
+			}
+			
+			getReply(rno).then((reply)=>{
+				replyHeader.innerHTML = reply.rno;
+				modifyText.value = reply.replyText;
+				modifyModal.show();
+				
+			}).catch((e)=>{
+				alert(e);
+			})
+			
+		})
+		
+		//댓글 삭제
+		removeBtn.addEventListener("click" ,(e)=>{
+			remove(replyHeader.innerHTML)
+			.then(data=>{
+				alert(`${data.rno} 삭제 `);
+				replyText.value = '';
+				modifyModal.hide();
+				
+				page = 1 
+				printRelies(page,size, false );
+			}).catch(e=>alert(e))
+		});
+		
+		//댓글 수정
+		modifyBtn.addEventListener("click" ,(e)=>{
+			
+			const modiFyObj = {
+					bno,
+					rno: replyHeader.innerHTML ,
+					replyText: modifyText.value
+			}
+			
+			modify(modiFyObj)
+			.then(data => {
+				const rno = data.rno;
+				replyText.value='';
+				modifyModal.hide();
+				
+				printRelies(page,size, false );
+				
+			}).catch((e)=>alert(e));
+			
+			
+		})
+		
+		closeModifyBtn.addEventListener("click", function(e){
+		    modifyModal.hide()
+		}, false)
+		
+		
+		//댓글등록
+		registerBtn.addEventListener("click" ,(e)=>{
+			const replyObj = {
+					bno,
+					replyText : replyText.value ,
+					replyer : replyer.value ,
+			}
+			
+			
+			addReply(replyObj)
+			.then(result=>{
+				console.log(result)
+				alert(result.rno);
+				registerModal.hide();
+				replyText.value = '';
+				replyer.value ='';
+				
+				printRelies(1,10,true);
+				
+			}).catch(e=>{
+				console.log(e);
+				alert("error")
+			})
+			
+			
+			
+		},false)
+		
+		
+		// 댓글 목록
+		const printList = (dtoList)=>{ 
+			let str = '';
+			
+			if(dtoList && dtoList.length >0){
+				dtoList.forEach((dto)=>{
+					str += `<li class="list-group-item d-flex">
+						    <span class="col-2">${dto.rno}</span>
+						    <span class="col-6" data-rno="${dto.rno}">${dto.replyText}</span>
+						    <span class="col-2">${dto.replyer}</span>
+						    <span class="col-2">${dto.regDate}</span>
+						  </li>`;
+				});
+				
+			}
+			
+			replyList.innerHTML = str;
+		}
+		
+		
+		//페이지 
+		const printPages = (data)=>{
+			let pageStr = '';
+
+			if(data.prev) {
+			    pageStr += `<li class="page-item"><a class="page-link" data-page="${data.start - 1}">PREV</a></li>`;
+			}
+
+			for(let i = data.start; i <= data.end; i++){
+			    pageStr += `<li class="page-item ${i == data.page ? 'active' : ''}"><a class="page-link" data-page="${i}">${i}</a></li>`;
+			}
+
+			if(data.next) {
+			    pageStr += `<li class="page-item"><a class="page-link" data-page="${data.end + 1}">NEXT</a></li>`;
+			}
+
+			replyPaging.innerHTML = pageStr;
+
+		}
+		
+		//페이지 이동
+		replyPaging.addEventListener("click", function (e){
+			
+			e.preventDefault();
+			e.stopPropagation();
+			
+			const target = e.target;
+			
+			if(!target || target.tagName !== 'A') {
+				return 
+			}
+			
+		   	page = target.getAttribute('data-page');
+		    
+		    printRelies(page , size , false);
+		    
+		}, false)
+		
+		
+		const printRelies = (page , size , goLast) =>{
+			getList({bno , page , size , goLast})
+			.then((data) =>{
+				printList(data.dtoList);
+				printPages(data);
+			}).catch((e)=>{console.log(e);})
+		}
+		
+		
+		
+		printRelies(1,10,true);
+		
+		
+		
 		
 	</script>
 </body>
