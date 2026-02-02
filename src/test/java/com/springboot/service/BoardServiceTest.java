@@ -41,16 +41,12 @@ public class BoardServiceTest {
 		boardService.remove(31L);
 	}*/
 	
-	@Test
-	public void testList() {
-		
-		PageRequsetDTO dto = PageRequsetDTO.builder()
-		.page(1)
-		.size(10)
-		.keyword("title4")
-		.type("wt")
-		.build();
-		
-		log.info(boardService.list(dto));
-	}
+	/*
+	 * @Test public void testList() {
+	 * 
+	 * PageRequsetDTO dto = PageRequsetDTO.builder() .page(1) .size(10)
+	 * .keyword("title4") .type("wt") .build();
+	 * 
+	 * log.info(boardService.list(dto)); }
+	 */
 }

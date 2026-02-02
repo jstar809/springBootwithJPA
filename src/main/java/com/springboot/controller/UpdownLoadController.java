@@ -64,7 +64,7 @@ public class UpdownLoadController {
 					if(Files.probeContentType(savePath).startsWith("image")) {
 						img = true ;
 						
-						File thumFile = new File(UPLOAD_PATH , uuid+ "s_" +file.getOriginalFilename());
+						File thumFile = new File(UPLOAD_PATH ,  "s_"+uuid+"_" +file.getOriginalFilename());
 						Thumbnailator.createThumbnail(savePath.toFile(), thumFile, 200, 200);
 					}
 				} catch (IllegalStateException | IOException e) {
@@ -124,8 +124,14 @@ public class UpdownLoadController {
 			String contentType = Files.probeContentType(deleteFilePath);
 			isRemoved = resource.getFile().delete();
 			
-			if("image".equals(contentType)) {
-				File thumFile = new File(Paths.get(UPLOAD_PATH, File.separator , "s_" ,fileName ).toString());
+			log.info(contentType);
+			log.info(contentType.startsWith("image")+"");
+			log.info(Paths.get( UPLOAD_PATH ,  File.separator , fileName).toString());
+			log.info(UPLOAD_PATH + File.separator + "s_" + fileName );
+			
+			
+			if(contentType.startsWith("image")) {
+				File thumFile = new File(UPLOAD_PATH + File.separator + "s_" + fileName );
 				thumFile.delete();
 			}
 			

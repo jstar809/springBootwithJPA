@@ -1,6 +1,7 @@
 package com.springboot.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
@@ -102,13 +103,51 @@ public class BoardRepositoryTest {
 	 * }
 	 */
 	
+	
+	/*
+	 * @Test public void queryDslSelect3() {
+	 * 
+	 * 
+	 * 
+	 * boardRepository.searchWithReplyCount( new String[] {"t" , "c"}, "title" ,
+	 * PageRequest.of(0, 10,Sort.by("bno").descending()));
+	 * 
+	 * }
+	 */
+	 
+	
+	
+	/*
+	 * @Test public void testInsertBoardImage() {
+	 * 
+	 * Board board = Board.builder() .title("image test") .content("content dd")
+	 * .writer("tester") .build();
+	 * 
+	 * for(int i =0 ; i < 10 ; i++) {
+	 * 
+	 * board.addImage(UUID.randomUUID().toString(), "file_"+i +"name"); }
+	 * 
+	 * 
+	 * boardRepository.save(board);
+	 * 
+	 * }
+	 */
+	
 	@Test
-	public void queryDslSelect3() {
+	public void testReadOneBoardImage() {
+		Board board = null;
+		
+		//1  세션 닫히네? .. 
+		board =  boardRepository.findById(39L).orElseThrow();
 		
 		
+		//2 EntityGraph 사용
+		board= boardRepository.findByIdWithImage(39L).orElseThrow();
 		
-		boardRepository.searchWithReplyCount( new String[] {"t" , "c"}, "title" , PageRequest.of(0, 10,Sort.by("bno").descending()));
 		
+		log.info(board);
+		log.info("-------------------------");
+		log.info(board.getImageSet());
 	}
 	
 }
