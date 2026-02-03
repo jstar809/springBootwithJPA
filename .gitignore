@@ -41,9 +41,3 @@ out/
 #git config
 .gitattributes
 
-# Gradle wrapper
-gradle/wrapper/gradle-wrapper.jar
-gradlew
-gradlew.bat
-settings.gradle
-
