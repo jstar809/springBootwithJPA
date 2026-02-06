@@ -1,8 +1,8 @@
 package com.springboot.repository;
 
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.IntStream;
+import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.springboot.domain.Board;
+import com.springboot.dto.BoardListAllReplyDTO;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -133,21 +133,93 @@ public class BoardRepositoryTest {
 	 * }
 	 */
 	
+	/*
+	 * @Test public void testReadOneBoardImage() { Board board = null;
+	 * 
+	 * //1 세션 닫히네? .. board = boardRepository.findById(39L).orElseThrow();
+	 * 
+	 * 
+	 * //2 EntityGraph 사용 board=
+	 * boardRepository.findByIdWithImage(39L).orElseThrow();
+	 * 
+	 * 
+	 * log.info(board); log.info("-------------------------");
+	 * log.info(board.getImageSet()); }
+	 */
+	
+	/*
+	 * @Test
+	 * 
+	 * @Transactional
+	 * 
+	 * @Commit public void testModifyBoardImage() {
+	 * 
+	 * Board board = boardRepository.findByIdWithImage(41L).orElseThrow();
+	 * 
+	 * board.change("updatedd", board.getContent());
+	 * 
+	 * 
+	 * board.clearImages();
+	 * 
+	 * for(int i = 0 ; i<= 3 ; i++) { board.addImage(UUID.randomUUID().toString(),
+	 * "fileNameTest"+i); }
+	 * 
+	 * boardRepository.save(board);
+	 * 
+	 * }
+	 */
+	
+	/*
+	 * @Test public void testDummyDataAll() {
+	 * 
+	 * final int BOARD_TEST_COUNT = 100; final int REPLY_TEST_COUNT = 3; final int
+	 * BOARDIMAGE_TEST_COUNT = 3;
+	 * 
+	 * 
+	 * 
+	 * for (int i = 0 ; i < BOARD_TEST_COUNT ; i++ ) {
+	 * 
+	 * Board board = Board.builder() .title("title" + i) .content("content"+i)
+	 * .writer("writer" + i) .build();
+	 * 
+	 * if(i%5 != 0) {
+	 * 
+	 * for(int j = 0 ; j < BOARDIMAGE_TEST_COUNT ; j++ ) {
+	 * 
+	 * board.addImage(UUID.randomUUID().toString(), i +"-"+ j +"filename"); } }
+	 * 
+	 * 
+	 * boardRepository.save(board);
+	 * 
+	 * for(int k = 0 ; k < REPLY_TEST_COUNT ; k++ ) {
+	 * 
+	 * }
+	 * 
+	 * }
+	 * 
+	 * }
+	 */
+	
+	
 	@Test
-	public void testReadOneBoardImage() {
-		Board board = null;
+	@Transactional
+	public void searchWithAll() {
 		
-		//1  세션 닫히네? .. 
-		board =  boardRepository.findById(39L).orElseThrow();
+		Pageable pageAble = PageRequest.of(0 ,10 , Sort.by("bno").descending());
+		
+		Page<BoardListAllReplyDTO> result = boardRepository.searchWithAll(new String[] {"T" , "W" , "C"}, "content1",pageAble );
+		
+		List<BoardListAllReplyDTO> resultList =  result.getContent();
+		
+		log.info(resultList);
 		
 		
-		//2 EntityGraph 사용
-		board= boardRepository.findByIdWithImage(39L).orElseThrow();
 		
+		resultList.forEach((i)->{
+			log.info(i.getBoardImage());
+		});
 		
-		log.info(board);
-		log.info("-------------------------");
-		log.info(board.getImageSet());
+	
 	}
 	
 }

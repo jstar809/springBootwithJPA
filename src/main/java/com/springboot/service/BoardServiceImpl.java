@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.springboot.domain.Board;
 import com.springboot.dto.BoardDTO;
+import com.springboot.dto.BoardListAllReplyDTO;
 import com.springboot.dto.BoardListReplyCountDTO;
 import com.springboot.dto.PageRequsetDTO;
 import com.springboot.dto.PageResponseDTO;
@@ -39,7 +40,7 @@ public class BoardServiceImpl implements BoardService {
 	public Long register(BoardDTO boardDTO) {
 		log.info("register : BoardDTO " + boardDTO);
 		
-		Board boardEntity = modelMapper.map(boardDTO, Board.class);
+		Board boardEntity = dtoToEntity(boardDTO);
 		
 		Board boardResult = boardRepository.save(boardEntity);
 		
@@ -50,12 +51,12 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public BoardDTO readOne(Long bno) {
 
-		Optional<Board> result = boardRepository.findById(bno);
+		Optional<Board> result = boardRepository.findByIdWithImage(bno);
 		Board board = result.orElseThrow();
 		
 		log.info(board);
 		
-		return modelMapper.map(board, BoardDTO.class);
+		return entityToDTO(board);
 	}
 
 	@Override
@@ -63,7 +64,19 @@ public class BoardServiceImpl implements BoardService {
 		Optional<Board> result = boardRepository.findById(boardDTO.getBno());
 		Board board = result.orElseThrow();
 		
+		log.info("board      " + board );
+		
 		board.change(boardDTO.getTitle() , boardDTO.getContent());
+		board.clearImages();
+		
+		if(boardDTO.getFileNames() != null) {
+			log.info("boardDTO.getFileNames()      " + boardDTO.getFileNames() );
+			boardDTO.getFileNames().forEach((fn)->{
+				String[] arr = fn.split("_");
+				board.addImage(arr[0], arr[1]);
+			});
+		}
+		
 		
 		boardRepository.save(board);
 		
@@ -117,6 +130,26 @@ public class BoardServiceImpl implements BoardService {
 			.build();
 		
 		return pageResponseDTO;
+	}
+
+	@Override
+	public PageResponseDTO<BoardListAllReplyDTO> listWithAll(PageRequsetDTO pageRequsetDTO) {
+		
+		Page<BoardListAllReplyDTO> result = boardRepository.searchWithAll(
+									pageRequsetDTO.getTypes(),
+									pageRequsetDTO.getKeyword() , 
+									pageRequsetDTO.getPageable("bno")
+								);
+		
+		
+		PageResponseDTO<BoardListAllReplyDTO> responseDTO =  
+				PageResponseDTO.<BoardListAllReplyDTO>withAll()
+								.pageRequsetDTO(pageRequsetDTO)	
+								.dtoList(result.getContent())
+								.total((int) result.getTotalElements())
+								.build();
+		
+		return responseDTO;
 	}
 
 }

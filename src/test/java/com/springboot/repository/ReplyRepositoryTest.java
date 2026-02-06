@@ -17,6 +17,9 @@ public class ReplyRepositoryTest {
 	@Autowired
 	ReplyRepository replyRepository;
 	
+	@Autowired
+	BoardRepository boardRepository;
+	
 	/*
 	 * @Test public void testInsert() {
 	 * 
@@ -54,4 +57,10 @@ public class ReplyRepositoryTest {
 	 * 
 	 * }
 	 */
+	
+	@Test
+	public void testDeleteByBoard() {
+		replyRepository.deleteByBoard_Bno(41L);
+		boardRepository.deleteById(41L);
+	}
 }

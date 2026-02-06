@@ -36,16 +36,22 @@ import net.coobird.thumbnailator.Thumbnailator;
 @RestController("/file")
 //@Log4j2
 public class UpdownLoadController {
+
+    private final BoardController boardController;
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Value("${project.upload.path}")
 	private String UPLOAD_PATH;
+
+    UpdownLoadController(BoardController boardController) {
+        this.boardController = boardController;
+    }
 	
 	@ApiOperation(value = "Upload Post", notes = "POST 방식으로 파일 등록" )
 	@PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public List<UploadResultDTO> upload(UploadFileDTO uploadFileDTO) {
-		
+		log.info("post upload");
 		if(uploadFileDTO.getFiles() != null) {
 			
 			final List<UploadResultDTO> list = new ArrayList<>();
@@ -57,7 +63,7 @@ public class UpdownLoadController {
 				boolean img = false ;
 				String fileName =  file.getOriginalFilename();
 				Path savePath = Paths.get(UPLOAD_PATH , uuid+ "_" +fileName);
-				
+				log.info(savePath.toString());
 				try {
 					file.transferTo(savePath);
 					
@@ -70,6 +76,8 @@ public class UpdownLoadController {
 				} catch (IllegalStateException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				
 				list.add( 	UploadResultDTO.builder()
@@ -79,7 +87,7 @@ public class UpdownLoadController {
 							.build()
 						);
 			}
-		
+			log.info(list.toString());
 			
 			return list;
 		}

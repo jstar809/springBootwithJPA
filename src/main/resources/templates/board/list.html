@@ -62,6 +62,9 @@
  								<span class="badge progress-bar-success" style="background-color:#0a53be">
  									[[${dto.replyCount}]]
  								</span>
+ 								<div th:if="${dto.getBoardImage != null && dto.getBoardImage.size()>0}">
+ 									<img th:alt="${image.uuid}" th:each="image : ${dto.getBoardImage}" th:src="|@{/view}/s_${image.uuid}_${image.fileName}|">
+ 								</div>
  							</td>
  							<td>[[${dto.writer}]] </td>
  							<td>[[${#temporals.format(dto.regDate ,'yyyy-MM-dd')}]] </td>

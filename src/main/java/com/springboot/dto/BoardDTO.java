@@ -1,6 +1,7 @@
 package com.springboot.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -30,8 +31,10 @@ public class BoardDTO {
 	@NotEmpty
 	private String writer;
 	
+	private List<String> fileNames;
 	
 	private LocalDateTime regDate;
+	
 	private LocalDateTime modDate;
 	
 	
