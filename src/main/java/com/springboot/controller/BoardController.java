@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -58,11 +59,13 @@ public class BoardController {
 		
 	}
 	
+	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/register")
 	public String registerGet() {
 		
 		return "/board/register";
 	}
+	
 	
 	@PostMapping("/register")
 	public String registerPost(@Valid BoardDTO boardDto , BindingResult bindingResult , RedirectAttributes redirectAttributes) {
@@ -83,6 +86,7 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping({"/read" , "/modify" })
 	public void read(Long bno , PageRequsetDTO pageRequsetDTO ,  Model model) {
 		
@@ -97,6 +101,7 @@ public class BoardController {
 		
 	}
 	
+	@PreAuthorize("principal.username == #boardDTO.writer")
 	@PostMapping("/modify")
 	public String modify(
 		PageRequsetDTO pageRequsetDTO,
@@ -124,6 +129,7 @@ public class BoardController {
 		return "redirect:/board/read";
 	}
 	
+	@PreAuthorize("principal.username == #boardDTO.writer")
 	@PostMapping("/remove")
 	public String remove(BoardDTO boardDTO ,RedirectAttributes redirectAttributes ) {
 		

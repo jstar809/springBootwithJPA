@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org"
-      layout:decorate="~{layout/basic.html}">
+      layout:decorate="~{layout/basic.html}"
+      >
 <head>
 <meta charset="UTF-8">
 <title>Board Read</title>
@@ -41,12 +42,16 @@
 						</div>
 						
 						
-						<div class="my-4">
+						<div class="my-4" th:with="user=${#authentication.principal}">
 							<div class="float-end" th:with="link=${pageRequsetDTO.link}">
 								<a th:href="|@{/board/list}?${link}|" class="text-decoration-none">
 									<button type="button" class="btn btn-primary"> List</button>
 								</a>
-								<a th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
+								<a 	
+									th:if="${user != null && user.username ==dto.writer}"
+									th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" 
+									class="text-decoration-none"
+								>
 									<button type="button" class="btn btn-secondary"> modify</button>
 								</a>
 							</div>
@@ -93,7 +98,7 @@
 				        </div>
 				        <div class="input-group mb-3">
 				          	<span class="input-group-text">Replyer</span>
-				          	<input type="text" class="form-control replyer" />
+				          	<input type="text" class="form-control replyer" th:value="${#authentication.principal.username}" readonly="readonly" />
 				        </div>
 			      </div>
 			      <div class="modal-footer">
@@ -136,6 +141,9 @@
 	
 	<script layout:fragment="script" th:inline="javascript">
 	
+		const currentUser = [[${#authentication.principal.username}]];
+		
+		
 		//댓글 페이지/ 사이즈
 		let page = 1;
 		let size = 10;
@@ -174,6 +182,8 @@
 		const removeBtn = document.querySelector(".removeBtn")
 		const closeModifyBtn = document.querySelector(".closeModifyBtn")
 	
+		//댓글 수정 가능여부 (내 댓글인지 확인용)
+		let hashAuth = false;
 		
 		//댓글 수정창 모달 쇼
 		replyList.addEventListener("click" ,(e)=>{
@@ -197,6 +207,8 @@
 				modifyText.value = reply.replyText;
 				modifyModal.show();
 				
+				hasAuth = currentUser == reply.replyer;
+				
 			}).catch((e)=>{
 				alert(e);
 			})
@@ -205,6 +217,13 @@
 		
 		//댓글 삭제
 		removeBtn.addEventListener("click" ,(e)=>{
+			
+			if(!hasAuth){
+				alert('댓글 삭제는 작성자만 가능합니다')
+				modifyModal.hide();
+				return 
+			}
+			
 			remove(replyHeader.innerHTML)
 			.then(data=>{
 				alert(`${data.rno} 삭제 `);
@@ -218,6 +237,12 @@
 		
 		//댓글 수정
 		modifyBtn.addEventListener("click" ,(e)=>{
+			
+			if(!hasAuth){
+				alert('댓글 수정은 작성자만 가능합니다')
+				modifyModal.hide();
+				return 
+			}
 			
 			const modiFyObj = {
 					bno,
