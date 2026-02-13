@@ -12,10 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import com.springboot.controller.BoardController;
+import com.springboot.security.CustomSocialLoginSuccessHandler;
 import com.springboot.security.CustomUserDeatils;
 import com.springboot.security.CustomUserDeatilsService;
 import com.springboot.security.handler.Custom403Handler;
@@ -60,6 +62,12 @@ public class CustomSecurityConfig {
 		//403에러 핸들러
 		http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
 		
+		//oauth2 
+		http.oauth2Login()
+		.loginPage("/member/login")
+		.successHandler(authenticationSuccessHandler())
+		;
+		
 		return http.build();
 	}
 	
@@ -93,4 +101,9 @@ public class CustomSecurityConfig {
 		return new Custom403Handler();
 	}
 	
+	
+	@Bean
+	public AuthenticationSuccessHandler authenticationSuccessHandler() {
+		return new CustomSocialLoginSuccessHandler(passwordEncorder());
+	}
 }
